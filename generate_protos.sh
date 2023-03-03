@@ -7,24 +7,8 @@ set -e
 PROTOBUF_VERSION=3.19.3
 
 # Generates the classes for the protobuf event format
-
-case "$OSTYPE" in
-  linux*)
-    PROTOBUF_PLATFORM=linux-x86_64
-    PROTOC=tmp/bin/protoc
-    ;;
-  win* | msys* | cygwin*)
-    PROTOBUF_PLATFORM=win64
-    PROTOC=tmp/bin/protoc.exe
-    ;;
-  darwin*)
-    PROTOBUF_PLATFORM=osx-x86_64
-    PROTOC=tmp/bin/protoc
-    ;;
-  *)
-    echo "Unknown OSTYPE: $OSTYPE"
-    exit 1
-esac
+PROTOBUF_PLATFORM=linux-x86_64
+PROTOC=tmp/bin/protoc
 
 # Clean up previous generation results
 rm -f src/CloudNative.CloudEvents.Protobuf/*.g.cs
@@ -43,7 +27,7 @@ unzip -q protobuf.zip
 echo "- Downloading schema"
 # TODO: Use the 1.0.2 branch when it exists.
 mkdir cloudevents
-curl -sSL https://raw.githubusercontent.com/cloudevents/spec/main/cloudevents/formats/cloudevents.proto -o cloudevents/ProtoSchema.proto
+curl -sSL https://raw.githubusercontent.com/cloudevents/spec/main/cloudevents/formats/cloudevents.proto -o cloudevents/cloudevents.proto
 
 cd ..
 
@@ -53,7 +37,7 @@ $PROTOC \
   -I tmp/cloudevents \
   --csharp_out=src/CloudNative.CloudEvents.Protobuf \
   --csharp_opt=file_extension=.g.cs \
-  tmp/cloudevents/ProtoSchema.proto
+  tmp/cloudevents/cloudevents.proto
 
 # Test protos
 $PROTOC \
